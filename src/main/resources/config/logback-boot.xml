@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--/**
+ * @author: liaojl
+ * @date: 2019/11/11 17:58
+ * @description: LOGBACK 配置文件 。
+ */-->
+<!--　scan: 当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。
+        　　　　scanPeriod: 设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。
+        　　　　debug: 当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。-->
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <!-- %m输出的信息, %p日志级别, %t线程名, %d日期, %c类的全名, %i索引 -->
+    <!-- appender是configuration的子节点,是负责写日志的组件 -->
+    <!-- ConsoleAppender把日志输出到控制台 -->
+    <!-- magenta:洋红 -->
+    <!-- boldMagenta:粗红-->
+    <!-- cyan:青色 -->
+    <!-- white:白色 -->
+    <!-- magenta:洋红 -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%yellow(%date{yyyy-MM-dd HH:mm:ss}) %highlight(%-5level) %cyan(%thread) %blue(%file:%line) %green(%logger) %boldBlue(%msg%n)"/>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <!--            <pattern>%date{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) (%file:%line\)- %m%n</pattern>-->
+            <!-- 控制台也要使用utf-8，不要使用gbk -->
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+    <!--详情参考 https://github.com/logstash/logstash-logback-encoder#udp-appender-->
+    <!--    <appender name="tcp" class="net.logstash.logback.appender.LogstashTcpSocketAppender">-->
+    <!--        <destination>127.0.0.1:8000</destination>-->
+    <!--        &lt;!&ndash; encoder必须配置,有多种可选 &ndash;&gt;-->
+    <!--        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LogstashEncoder"/>-->
+    <!--    </appender>-->
+    <!--    <appender name="UDP" class="net.logstash.logback.appender.LogstashUdpSocketAppender">-->
+    <!--        <host>127.0.0.1</host>-->
+    <!--        &lt;!&ndash; port is optional (default value shown) &ndash;&gt;-->
+    <!--        <port>514</port>-->
+    <!--        &lt;!&ndash; layout is required &ndash;&gt;-->
+    <!--        <layout charset="UTF-8" class="net.logstash.logback.layout.LogstashLayout"/>-->
+    <!--    </appender>-->
+    <!-- RollingFileAppender:滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 -->
+    <!-- 1.先按日期存日志，日期变了，将前一天的日志文件名重命名为xxx%日期%索引，新的日志仍然是sys.log -->
+    <!-- 2.如果日期没有变化，但是当前日志文件的大小超过1kb时，对当前日志进行分割 重名名 -->
+    <appender name="files" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>./log/web.ssh.log</File>
+        <!-- rollingPolicy:当发生滚动时，决定 RollingFileAppender 的行为，涉及文件移动和重命名。 -->
+        <!-- TimeBasedRollingPolicy： 最常用的滚动策略，它根据时间来制定滚动策略，既负责滚动也负责出发滚动 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 活动文件的名字会根据fileNamePattern的值，每隔一段时间改变一次 -->
+            <!-- 文件名：log/sys.2017-12-05.0.log -->
+            <fileNamePattern>../log/web,ssh.%d.%i.log</fileNamePattern>
+            <!-- 每产生一个日志文件，该日志文件的保存期限为30天 -->
+            <maxHistory>30</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- maxFileSize:这是活动文件的大小，默认值是10MB,本篇设置为1KB，只是为了演示 -->
+                <maxFileSize>10240KB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <!-- pattern节点，用来设置日志的输入格式 -->
+            <pattern>
+                %d %p (%file:%line\)- %m%n
+            </pattern>
+            <!-- 记录日志的编码 -->
+            <charset>UTF-8</charset> <!-- 此处设置字符集 -->
+        </encoder>
+    </appender>
+    <!-- 控制台日志输出级别 -->
+
+    <!-- 指定项目中某个包，当有日志操作行为时的日志记录级别 -->
+    <!-- com.appley为根包，也就是只要是发生在这个根包下面的所有日志操作行为的权限都是DEBUG -->
+    <!-- 级别依次为【从高到低】：FATAL > ERROR > WARN > INFO > DEBUG > TRACE  -->
+
+    <!--root是默认的logger 这里设定输出级别是debug-->
+    <root level="WARN">
+        <!--定义了两个appender，日志会通过往这两个appender里面写-->
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="files"/>
+        <!--        <appender-ref ref="UDP"/>-->
+    </root>
+    <!-- show parameters for hibernate sql 专为 Hibernate 定制 -->
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="INFO"/>
+    <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="INFO"/>
+    <logger name="org.hibernate.SQL" level="INFO"/>
+    <logger name="org.hibernate.engine.QueryParameters" level="INFO"/>
+    <logger name="org.hibernate.engine.query.HQLQueryPlan" level="INFO"/>
+
+    <!--myibatis log configure-->
+    <logger name="com.ibatis" level="DEBUG"/>
+    <logger name="com.ibatis.common.jdbc.SimpleDataSource" level="DEBUG"/>
+    <logger name="com.ibatis.common.jdbc.ScriptRunner" level="DEBUG"/>
+    <logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="DEBUG"/>
+    <logger name="java.sql.Connection" level="DEBUG"/>
+    <logger name="java.sql.Statement" level="DEBUG"/>
+    <logger name="java.sql.PreparedStatement" level="DEBUG"/>
+    <logger name="org.springframework.boot.web.embedded" level="INFO"/>
+    <!--对于类路径以 com.example.logback 开头的Logger,输出级别设置为warn,并且只输出到控制台-->
+    <!--这个logger没有指定appender，它会继承root节点中定义的那些appender-->
+    <logger name="cn.objectspace.webssh" level="debug"></logger>
+    <!--通过 LoggerFactory.getLogger("mytest") 可以获取到这个logger-->
+    <!--由于这个logger自动继承了root的appender，root中已经有stdout的appender了，自己这边又引入了stdout的appender-->
+    <!--如果没有设置 additivity="false" ,就会导致一条日志在控制台输出两次的情况-->
+    <!--additivity表示要不要使用rootLogger配置的appender进行输出-->
+
+    <!--由于设置了 additivity="false" ，所以输出时不会使用rootLogger的appender-->
+    <!--但是这个logger本身又没有配置appender，所以使用这个logger输出日志的话就不会输出到任何地方-->
+    <!--    <logger name="mytest2" level="info" additivity="false"/>-->
+
+</configuration>

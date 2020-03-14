@@ -1,0 +1,6 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  cn.objectspace.webssh.config.WebSSHWebSocketConfig,\
+  cn.objectspace.webssh.config.ProjectCommonConfig,\
+  cn.objectspace.webssh.controller.LoginController,\
+  cn.objectspace.webssh.config.WebAppConfigurer
+  

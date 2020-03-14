@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>标题</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../css/index.css">
+    <!-- 必须先引入vue  后使用element-ui -->
+    <script src="../js/vue.2.6.js"></script>
+    <script src="../js/index.js"></script>
+    <script src="../js/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <el-row>
+        <!--        <el-button>默认按钮</el-button>-->
+        <el-button type="primary" @click="this.refresh">刷 新</el-button>
+
+        <!--        <el-button type="success">成功按钮</el-button>-->
+        <!--        <el-button type="info">信息按钮</el-button>-->
+        <!--        <el-button type="warning">警告按钮</el-button>-->
+        <!--        <el-button type="danger">危险按钮</el-button>-->
+    </el-row>
+    <el-table :data="tableData3" class="scrollbar" border style="width: 100%">
+        <el-table-column prop="title" label="名称" width="180">
+            <template slot-scope="scope">
+                <a href="javascript:void(0)" @click="openTerminal(scope.$index)"
+                   class="buttonText">{{scope.row.title}}</a>
+            </template>
+        </el-table-column>
+        <el-table-column prop="name" label="用户名"></el-table-column>
+        <el-table-column prop="ip" label="IP"></el-table-column>
+        <el-table-column prop="port" label="端口"></el-table-column>
+    </el-table>
+</div>
+</body>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            tableData3: [],
+        },
+        mounted() {
+            // for (let i = 1; i < 20; i++) {
+            //     this.tableData3.push(this.dataObj);
+            // }
+            let str = window.sessionStorage.getItem('terminals');
+            // debugger
+            let data = JSON.parse(str);
+            this.putData(data);
+            this.$nextTick(function () {
+                $('.el-table__body-wrapper').addClass('scrollbar');
+            })
+        },
+        methods: {
+            putData(data, append) {
+
+                for (item in data) {
+                    let dataObj = {
+                        "title": data[item]['terminalTitle'],
+                        "name": data[item]['terminalName'],
+                        "ip": data[item]['terminalIp'],
+                        "port": data[item]['terminalPort']
+                    }
+                    // debugger
+                    if (!append) {
+                        this.tableData3 = [];
+                    }
+
+                    this.tableData3.push(dataObj);
+                }
+            },
+            openTerminal(index) {
+                window.sessionStorage.setItem("activity", index);
+                window.location.href = './webssh.html';
+            },
+            refresh() {
+                let _this = this;
+                $.ajax({
+                    type: "GET",
+                    url: "../getUserTerminals",
+                    async: false,
+                    dataType: "JSON",
+                    success: function (response) {
+                        // debugger
+                        if (response.resultCode == 200) {
+                            window.sessionStorage.setItem('terminals', JSON.stringify(response.data));
+                            _this.putData(response.data);
+                        } else {
+                            alert(response.resultMsg);
+                        }
+                    }
+                });
+            }
+        }
+    });
+</script>
+<style>
+    .scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 7px;
+    }
+
+    .scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(160, 160, 160, 0.9);
+        border-radius: 0px;
+        scrollbar-highlight-color: blue;
+    }
+
+    .scrollbar::-webkit-scrollbar-3dlight {
+        color: red;
+    }
+
+    .scrollbar::-webkit-scrollbar-track {
+        background: #f0f0f0;
+    }
+
+    .el-table__body-wrapper {
+        position: relative;
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: 250px;
+    }
+</style>
+</html>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>WebSSH</title>
-    <link rel="stylesheet" href="../css/xterm.css" />
+    <link rel="stylesheet" href="../css/xterm.css"/>
 </head>
 <body>
 <div id="terminal" style="width: 100%;height: 100%"></div>
@@ -11,16 +11,22 @@
 <script src="../js/xterm.js" charset="utf-8"></script>
 <script src="../js/webssh.js" charset="utf-8"></script>
 <script>
-    openTerminal( {
-        /*operate:'connect',
-        host: '',//IP
-        port: '',//端口号
-        username: '',//用户名
-        password: ''//密码*/
+    let index = window.sessionStorage.getItem("activity");
+    let str = window.sessionStorage.getItem('terminals');
+    let data = JSON.parse(str)[index];
+    debugger
+    openTerminal({
+        operate: 'connect',
+        host: data['terminalIp'],//IP
+        port: data['terminalPort'],//端口号
+        username: data['terminalName'],//用户名
+        password: data['terminalPass']//密码
     });
-    function openTerminal(options){
-        var client = new WSSHClient();
-        var term = new Terminal({
+
+    function openTerminal(options) {
+        debugger
+        let client = new WSSHClient();
+        let term = new Terminal({
             cols: 97,
             rows: 37,
             cursorBlink: true, // 光标闪烁

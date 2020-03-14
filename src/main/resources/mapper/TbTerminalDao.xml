@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.objectspace.webssh.dao.TbTerminalDao">
+
+    <resultMap type="cn.objectspace.webssh.entity.TbTerminal" id="TbTerminalMap">
+        <result property="terminalId" column="TERMINAL_ID" jdbcType="VARCHAR"/>
+        <result property="terminalIp" column="TERMINAL_IP" jdbcType="VARCHAR"/>
+        <result property="userId" column="USER_ID" jdbcType="VARCHAR"/>
+        <result property="terminalTitle" column="TERMINAL_TITLE" jdbcType="VARCHAR"/>
+        <result property="terminalName" column="TERMINAL_NAME" jdbcType="VARCHAR"/>
+        <result property="terminalPort" column="TERMINAL_PORT" jdbcType="INTEGER"/>
+        <result property="terminalPass" column="TERMINAL_PASS" jdbcType="VARCHAR"/>
+        <result property="status" column="STATUS" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TbTerminalMap">
+        select
+          TERMINAL_IP, TERMINAL_ID, TERMINAL_NAME, TERMINAL_PORT, TERMINAL_PASS, STATUS,USER_ID,TERMINAL_TITLE
+        from PUBLIC.TB_TERMINAL
+        where TERMINAL_ID = #{terminalId}
+    </select>
+    <!--查询多个-->
+    <select id="queryByUserId" resultMap="TbTerminalMap">
+        select
+         TERMINAL_IP,  TERMINAL_ID, TERMINAL_NAME, TERMINAL_PORT, TERMINAL_PASS, STATUS,USER_ID,TERMINAL_TITLE
+        from PUBLIC.TB_TERMINAL
+        where USER_ID = #{userId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TbTerminalMap">
+        select
+        TERMINAL_IP,   TERMINAL_ID, TERMINAL_NAME, TERMINAL_PORT, TERMINAL_PASS, STATUS,USER_ID,TERMINAL_TITLE
+        from PUBLIC.TB_TERMINAL
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TbTerminalMap">
+        select
+        TERMINAL_IP, TERMINAL_ID, TERMINAL_NAME, TERMINAL_PORT, TERMINAL_PASS, STATUS,USER_ID,TERMINAL_TITLE
+        from PUBLIC.TB_TERMINAL
+        <where>
+            <if test="terminalId != null and terminalId != ''">
+                and TERMINAL_ID = #{terminalId}
+            </if>
+            <if test="terminalIp != null and terminalIp != ''">
+                and TERMINAL_IP, = #{terminalId}
+            </if>
+            <if test="userId != null and userId != ''">
+                and TERMINAL_ID = #{userId}
+            </if>
+            <if test="terminalTitle != null and terminalTitle != ''">
+                and TERMINAL_TITLE = #{terminalTitle}
+            </if>
+            <if test="terminalName != null">
+                and TERMINAL_NAME = #{terminalName}
+            </if>
+            <if test="terminalPort != null">
+                and TERMINAL_PORT = #{terminalPort}
+            </if>
+            <if test="terminalPass != null">
+                and TERMINAL_PASS = #{terminalPass}
+            </if>
+            <if test="status != null">
+                and STATUS = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="terminalId" useGeneratedKeys="true">
+        insert into PUBLIC.TB_TERMINAL(TERMINAL_NAME, TERMINAL_PORT, TERMINAL_PASS, STATUS,USER_ID,TERMINAL_TITLE,TERMINAL_IP)
+        values (#{terminalName}, #{terminalPort}, #{terminalPass}, #{status},#{terminalTitle},#{terminalIp})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update PUBLIC.TB_TERMINAL
+        <set>
+            <if test="terminalName != null">
+                TERMINAL_NAME = #{terminalName},
+            </if>
+            <if test="terminalIp != null">
+                TERMINAL_IP = #{terminalIp},
+            </if>
+            <if test="terminalTitle != null">
+                TERMINAL_TITLE = #{terminalTitle},
+            </if>
+            <if test="terminalName != null">
+                USER_ID = #{userId},
+            </if>
+            <if test="terminalPort != null">
+                TERMINAL_PORT = #{terminalPort},
+            </if>
+            <if test="terminalPass != null">
+                TERMINAL_PASS = #{terminalPass},
+            </if>
+            <if test="status != null">
+                STATUS = #{status},
+            </if>
+        </set>
+        where TERMINAL_ID = #{terminalId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from PUBLIC.TB_TERMINAL where TERMINAL_ID = #{terminalId}
+    </delete>
+
+</mapper>

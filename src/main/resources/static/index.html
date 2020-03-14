@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>用户登录界面 </title>
+    <meta name="description" content="particles.js is a lightweight JavaScript library for creating particles.">
+    <meta name="author" content="Vincent Garreau"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" media="screen" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/reset.css"/>
+    <script src="js/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+
+<div id="particles-js">
+    <div class="login">
+        <div class="login-top">
+            登录
+        </div>
+        <div class="login-center clearfix">
+            <div class="login-center-img"><img src="img/name.png"/></div>
+            <div class="login-center-input">
+                <input type="text" required id="name" value="" placeholder="请输入您的用户名" onfocus="this.placeholder=''"
+                       onblur="this.placeholder='请输入您的用户名'"/>
+                <div class="login-center-input-text">用户名</div>
+            </div>
+        </div>
+        <div class="login-center clearfix">
+            <div class="login-center-img"><img src="img/password.png"/></div>
+            <div class="login-center-input">
+                <input type="password" id="pwd" required value="" placeholder="请输入您的密码" onfocus="this.placeholder=''"
+                       onblur="this.placeholder='请输入您的密码'"/>
+                <div class="login-center-input-text">密码</div>
+            </div>
+        </div>
+        <div class="login-button">
+            登录
+        </div>
+    </div>
+    <div class="sk-rotating-plane"></div>
+</div>
+
+<!-- scripts -->
+<script src="js/particles.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript">
+    function hasClass(elem, cls) {
+        cls = cls || '';
+        if (cls.replace(/\s/g, '').length == 0) return false; //当cls没有参数时，返回false
+        return new RegExp(' ' + cls + ' ').test(' ' + elem.className + ' ');
+    }
+
+    function addClass(ele, cls) {
+        if (!hasClass(ele, cls)) {
+            ele.className = ele.className == '' ? cls : ele.className + ' ' + cls;
+        }
+    }
+
+    function removeClass(ele, cls) {
+        if (hasClass(ele, cls)) {
+            var newClass = ' ' + ele.className.replace(/[\t\r\n]/g, '') + ' ';
+            while (newClass.indexOf(' ' + cls + ' ') >= 0) {
+                newClass = newClass.replace(' ' + cls + ' ', ' ');
+            }
+            ele.className = newClass.replace(/^\s+|\s+$/g, '');
+        }
+    }
+
+    document.querySelector(".login-button").onclick = function () {
+        this.disabled = true;
+        addClass(document.querySelector(".login"), "active")
+        addClass(document.querySelector(".sk-rotating-plane"), "active")
+        document.querySelector(".login").style.display = "none"
+        let name = $('#name').val();
+        let pwd = $('#pwd').val();
+        if (!(name && pwd)) {
+            alert("密码账号不能为空");
+        }
+        let data = {
+            "name": name,
+            "pwd": pwd
+        }
+        $.ajax({
+            type: "POST",
+            url: "./login",
+            data: data,
+            async: false,
+            dataType: "JSON",
+            success: function (response) {
+                if (response.resultCode == 200) {
+                    window.sessionStorage.setItem('terminals', JSON.stringify(response.data));
+                    window.location.href = './page/index.html';
+                } else {
+                    alert(response.resultMsg);
+                }
+            }
+        });
+        removeClass(document.querySelector(".login"), "active")
+        removeClass(document.querySelector(".sk-rotating-plane"), "active")
+        document.querySelector(".login").style.display = "block"
+        this.disabled = false;
+    }
+</script>
+<div style="text-align:center;">
+    <!--    <p>更多模板：<a href="http://www.mycodes.net/" target="_blank">源码之家</a></p>-->
+</div>
+</body>
+</html>

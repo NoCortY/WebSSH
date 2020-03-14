@@ -1,7 +1,73 @@
 server:
   port: 8080
+  http2:
+    enabled: true
 spring:
+  datasource:
+    url: jdbc:h2:tcp://localhost/./src/main/resources/db/db
+    username: silu
+    password: 59421
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
   mvc:
     view:
       prefix: /page/
       suffix: .html
+  jackson:
+    #日期格式化
+    date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      #格式化输出
+      indent_output: false
+      #忽略无法转换的对象
+      fail_on_empty_beans: false
+    #设置空如何序列化
+    defaultPropertyInclusion: NON_EMPTY
+    deserialization:
+      read_unknown_enum_values_as_null: true
+      #允许对象忽略json中不存在的属性
+      fail_on_unknown_properties: false
+    parser:
+      #允许出现特殊字符和转义符
+      allow_unquoted_control_chars: true
+      #允许出现单引号
+      allow_single_quotes: true
+    mapper:
+      ACCEPT_CASE_INSENSITIVE_ENUMS: true
+    time-zone: GMT+8
+  servlet:
+    ## MULTIPART (MultipartProperties)
+    multipart:
+      # 开启 multipart 上传功能
+      enabled: true
+      # 文件写入磁盘的阈值
+      file-size-threshold: 2KB
+      # 最大文件大小
+      max-file-size: 200MB
+      # 最大请求大小
+      max-request-size: 215MB
+  devtools:
+    restart:
+      #排除那个目录的文件不需要restart
+      exclude: db/**,static/**,mapper/**
+      enabled: false
+  application:
+    name: WebSsh
+mybatis:
+  type-aliases-package: cn.objectspace.webssh.dao
+  mapper-locations: classpath:mapper/**/*.xml
+
+logging:
+  config: classpath:config/logback-boot.xml
+system:
+  h2:
+    web:
+      enable: true
+      allowOther: true
+      port: 8802
+    tcp:
+      enable: true
+      allowOther: true
+      port: 9092

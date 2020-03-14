@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.objectspace.webssh.dao.TbUserDao">
+
+    <resultMap type="cn.objectspace.webssh.entity.TbUser" id="TbUserMap">
+        <result property="id" column="ID" jdbcType="VARCHAR"/>
+        <result property="userName" column="USER_NAME" jdbcType="VARCHAR"/>
+        <result property="userPass" column="USER_PASS" jdbcType="VARCHAR"/>
+        <result property="addTime" column="ADD_TIME" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="UPDATE_TIME" jdbcType="TIMESTAMP"/>
+        <result property="adminRole" column="ADMIN_ROLE" jdbcType="INTEGER"/>
+        <result property="ext" column="EXT" jdbcType="VARCHAR"/>
+        <result property="status" column="STATUS" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TbUserMap">
+        select
+          ID, USER_NAME, USER_PASS, ADD_TIME, UPDATE_TIME, ADMIN_ROLE, EXT, STATUS
+        from PUBLIC.TB_USER
+        where ID = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TbUserMap">
+        select
+          ID, USER_NAME, USER_PASS, ADD_TIME, UPDATE_TIME, ADMIN_ROLE, EXT, STATUS
+        from PUBLIC.TB_USER
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TbUserMap">
+        select
+          ID, USER_NAME, USER_PASS, ADD_TIME, UPDATE_TIME, ADMIN_ROLE, EXT, STATUS
+        from PUBLIC.TB_USER
+        <where>
+            <if test="id != null and id != ''">
+                and ID = #{id}
+            </if>
+            <if test="userName != null and userName != ''">
+                and USER_NAME = #{userName}
+            </if>
+            <if test="userPass != null and userPass != ''">
+                and USER_PASS = #{userPass}
+            </if>
+            <if test="addTime != null">
+                and ADD_TIME = #{addTime}
+            </if>
+            <if test="updateTime != null">
+                and UPDATE_TIME = #{updateTime}
+            </if>
+            <if test="adminRole != null">
+                and ADMIN_ROLE = #{adminRole}
+            </if>
+            <if test="ext != null and ext != ''">
+                and EXT = #{ext}
+            </if>
+            <if test="status != null">
+                and STATUS = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into PUBLIC.TB_USER(USER_NAME, USER_PASS, ADD_TIME, UPDATE_TIME, ADMIN_ROLE, EXT, STATUS)
+        values (#{userName}, #{userPass}, #{addTime}, #{updateTime}, #{adminRole}, #{ext}, #{status})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update PUBLIC.TB_USER
+        <set>
+            <if test="userName != null and userName != ''">
+                USER_NAME = #{userName},
+            </if>
+            <if test="userPass != null and userPass != ''">
+                USER_PASS = #{userPass},
+            </if>
+            <if test="addTime != null">
+                ADD_TIME = #{addTime},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime},
+            </if>
+            <if test="adminRole != null">
+                ADMIN_ROLE = #{adminRole},
+            </if>
+            <if test="ext != null and ext != ''">
+                EXT = #{ext},
+            </if>
+            <if test="status != null">
+                STATUS = #{status},
+            </if>
+        </set>
+        where ID = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from PUBLIC.TB_USER where ID = #{id}
+    </delete>
+
+</mapper>
